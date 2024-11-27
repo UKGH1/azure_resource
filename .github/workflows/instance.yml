@@ -1,25 +1,28 @@
 # Define the name of the GitHub Action workflow
-name: Create an ec2 instance
+name: Create an Azure storage account instance
 # This workflow is manually triggered using the GitHub Actions UI
 on:
   workflow_dispatch:
     # Define inputs that are required for the manual trigger
     inputs:
-      instanceName:
-        description: 'Name of the AWS Instance'  # What's this input for?
+      sa_name:
+        description: 'Name of the Azure storage account'  # What's this input for?
         required: true  # Is it optional or required?
-      awsRegion:
-        description: 'AWS Region for the instance'
+      sa_location:
+        description: 'Azure location for the storage account'
         required: true
-      instanceType:
-        description: 'AWS instance type'
+      sa_account_tier:
+        description: 'storage account tier '
+        required: true
+      sa_account_replication_type:
+        description: 'storage account replicationtype  '
         required: true
       action:
         description: 'Action to perform (apply/destroy)'
         required: true
 # Jobs to be executed in this workflow
 jobs:
-  # Job for applying the ec2 instance
+  # Job for applying the azure storage account
   apply_ec2:
     # Use the latest Ubuntu runner
     runs-on: ubuntu-latest
@@ -34,12 +37,18 @@ jobs:
       uses: actions/checkout@v2
 
 # adding aws keys. Please store the value of these key in GitHub variables
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
+#    - name: Configure AWS credentials
+#      uses: aws-actions/configure-aws-credentials@v2
+#      with:
+#        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+# adding Azure creds. Please store the value of these keys in GitHub variables
+    - name: Log in to Azure
+      uses: azure/login@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     # Initialize Terraform 
     - name: Terraform Init
@@ -59,7 +68,7 @@ jobs:
     # Apply the Terraform plan
     - name: Terraform vars
     - name: terraform apply
-      run: terraform apply -var instanceName=${{ github.event.inputs.instanceName }} -var awsRegion=${{ github.event.inputs.awsRegion }} -var instanceType=${{ github.event.inputs.instanceType }} -auto-approve
+      run: terraform apply -var sa_name=${{ github.event.inputs.sa_name }} -var sa_location=${{ github.event.inputs.sa_location }} -var sa_account_tier=${{ github.event.inputs.sa_account_tier }} -var sa_account_replication_type=${{ github.event.inputs.sa_account_replication_type }} -auto-approve
       working-directory: .
 
   # Destroying the  ec2 instance
@@ -73,13 +82,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-# adding aws keys. Please store the value of these key in GitHub variables
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
+# adding Azure creds. Please store the value of these keys in GitHub variables
+    - name: Log in to Azure
+      uses: azure/login@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     - name: Terraform Init
       run: terraform init
@@ -93,5 +100,5 @@ jobs:
     # Destroy all resources 
     - name: Terraform Destroy
     - name: terraform apply
-      run: terraform destroy -var instanceName=${{ github.event.inputs.instanceName }} -var awsRegion=${{ github.event.inputs.awsRegion }} -auto-approve
+      run: terraform destroy -var sa_name=${{ github.event.inputs.sa_name }} -var sa_location=${{ github.event.inputs.sa_location }} -var sa_account_tier=${{ github.event.inputs.sa_account_tier }} -var sa_account_replication_type=${{ github.event.inputs.sa_account_replication_type }} -auto-approve
       working-directory: .
