@@ -1,5 +1,5 @@
 # Define the name of the GitHub Action workflow
-name: Create an Azure storage account instance
+name: azuresa_provision_001
 # This workflow is manually triggered using the GitHub Actions UI
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ on:
         description: 'storage account tier '
         required: true
       sa_account_replication_type:
-        description: 'storage account replicationtype  '
+        description: 'storage account replication type  '
         required: true
       action:
         description: 'Action to perform (apply/destroy)'
@@ -26,6 +26,7 @@ jobs:
   apply_azuresa:
     # Use the latest Ubuntu runner
     runs-on: ubuntu-latest
+    name: 'azuresa_provision_001'
     
     # Execute this step only if the action input is "apply"
     if: ${{ github.event.inputs.action == 'apply' }}
