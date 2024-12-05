@@ -40,6 +40,10 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init
+      - name: Debug Input1
+        run: echo "${{ inputs.action }}"
+      - name: Debug Input2
+        run: echo "${{ github.event.inputs.action }}"
 
       - name: Run Terraform
         run: |
