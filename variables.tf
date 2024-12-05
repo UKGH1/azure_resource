@@ -1,7 +1,3 @@
-variable "client_id" {}
-variable "client_secret" {}
-variable "tenant_id" {}
-variable "subscription_id" {}
 variable "sa_name" {
   type        = string
   description = "Specifies the name of the storage account. Only lowercase Alphanumeric characters allowed. Changing this forces a new resource to be created. This must be unique across the entire Azure service, not just within the resource group"
