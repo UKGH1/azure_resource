@@ -15,6 +15,9 @@ on:
       sa_account_replication_type:
         description: 'Replication Type'
         required: true
+      sa_rgname:
+        description: 'Resource Group Name'
+        required: true
       action:
         description: 'Terraform Action'
         required: true
@@ -49,6 +52,7 @@ jobs:
         run: |
           terraform ${{ inputs.action }} -auto-approve \
           -var="sa_name=${{ github.event.inputs.sa_name }}" \
+          -var="sa_rgname=${{ github.event.inputs.sa_rgname }}" \
           -var="sa_location=${{ github.event.inputs.sa_location }}" \
           -var="sa_account_tier=${{ github.event.inputs.sa_account_tier }}" \
           -var="sa_account_replication_type=${{ github.event.inputs.sa_account_replication_type }}"
