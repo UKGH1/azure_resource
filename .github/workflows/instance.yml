@@ -1,105 +1,47 @@
-# Define the name of the GitHub Action workflow
-name: azuresa_provision_001
-# This workflow is manually triggered using the GitHub Actions UI
+name: Azure Storage Provisioning
+
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
-    # Define inputs that are required for the manual trigger
     inputs:
       sa_name:
-        description: 'Name of the Azure storage account'  # What's this input for?
-        required: true  # Is it optional or required?
+        description: 'Storage Account Name'
+        required: true
       sa_location:
-        description: 'Azure location for the storage account'
+        description: 'Azure Location'
         required: true
       sa_account_tier:
-        description: 'storage account tier '
+        description: 'Account Tier'
         required: true
       sa_account_replication_type:
-        description: 'storage account replication type  '
+        description: 'Replication Type'
         required: true
       action:
-        description: 'Action to perform (apply/destroy)'
+        description: 'Terraform Action'
         required: true
-# Jobs to be executed in this workflow
+
 jobs:
-  # Job for applying the azure storage account
-  apply_azuresa:
-    # Use the latest Ubuntu runner
+  terraform:
     runs-on: ubuntu-latest
- 
-    # Execute this step only if the action input is "apply"
-    if: ${{ github.event.inputs.action == 'apply' }}
-    # Define the steps for this job
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Install Azure CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y azure-cli
-    - name: Interactive Login
-      run: az login --use-device-code
-      
-    - name: Set Azure Subscription
-      run: az account set --subscription "511235a9-1907-41f1-b32f-27948e2a86be"
+      - name: Authenticate to Azure
+        run: az login --use-device-code
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.6
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
 
-    # Initialize Terraform 
-    - name: Terraform Init
-      run: terraform init
-      working-directory: .  # Where should this command be run?
-      
-    # Format Terraform code
-    - name: Terraform Format
-      run: terraform fmt
-      working-directory: .
-      
-    # Validate the Terraform code 
-    - name: Terraform Validate
-      run: terraform validate
-      working-directory: .
-      
-    # Apply the Terraform plan
-    - name: terraform apply
-      run: terraform apply -var sa_name=${{ github.event.inputs.sa_name }} -var sa_location=${{ github.event.inputs.sa_location }} -var sa_account_tier=${{ github.event.inputs.sa_account_tier }} -var sa_account_replication_type=${{ github.event.inputs.sa_account_replication_type }} -auto-approve
-      working-directory: .
+      - name: Initialize Terraform
+        run: terraform init
 
-  # Destroying the azure storage account instance
-  destroy_instance:
-    runs-on: ubuntu-latest
-    
-    # Execute this job only if the action input is "destroy"
-    if: ${{ github.event.inputs.action == 'destroy' }}
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      
-# adding Azure creds. Please store the value of these keys in GitHub variables
-    - name: Log in to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
-    - name: Terraform Init
-      run: terraform init
-      working-directory: .
-      
-    - name: Terraform FMT
-      run: terraform fmt
-      working-directory: .
-      
-      
-    # Destroy all resources 
-    - name: Terraform Destroy
-    - name: terraform apply
-      run: terraform destroy -var sa_name=${{ github.event.inputs.sa_name }} -var sa_location=${{ github.event.inputs.sa_location }} -var sa_account_tier=${{ github.event.inputs.sa_account_tier }} -var sa_account_replication_type=${{ github.event.inputs.sa_account_replication_type }} -auto-approve
-      working-directory: .
+      - name: Run Terraform
+        run: |
+          terraform ${inputs.action} \
+          -var="sa_name=${{ github.event.inputs.sa_name }}" \
+          -var="sa_location=${{ github.event.inputs.sa_location }}" \
+          -var="sa_account_tier=${{ github.event.inputs.sa_account_tier }}" \
+          -var="sa_account_replication_type=${{ github.event.inputs.sa_account_replication_type }}"
