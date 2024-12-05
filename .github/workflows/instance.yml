@@ -28,9 +28,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Authenticate to Azure
-        run: az login --use-device-code
-      - name: Set Azure tenant
-        run: az login --tenant "0d1e47cc-960b-4576-82cc-e3e94f5e83bf"
+        run: az login --use-device-code --tenant "0d1e47cc-960b-4576-82cc-e3e94f5e83bf"
+
       - name: Set Azure Subscription
         run: az account set --subscription "511235a9-1907-41f1-b32f-27948e2a86be"
 
