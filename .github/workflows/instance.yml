@@ -42,12 +42,12 @@ jobs:
         run: terraform init
       - name: Debug Input1
         run: echo "${{ inputs.action }}"
-      - name: Debug Input2
-        run: echo "${{ github.event.inputs.action }}"
+     # - name: Debug Input2
+     #   run: echo "${{ github.event.inputs.action }}"
 
       - name: Run Terraform
         run: |
-          terraform ${{ inputs.action }} \
+          terraform ${{ inputs.action }} -auto-approve \
           -var="sa_name=${{ github.event.inputs.sa_name }}" \
           -var="sa_location=${{ github.event.inputs.sa_location }}" \
           -var="sa_account_tier=${{ github.event.inputs.sa_account_tier }}" \
