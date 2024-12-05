@@ -4,7 +4,7 @@ name: azuresa_provision_001
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
     # Define inputs that are required for the manual trigger
     inputs:
