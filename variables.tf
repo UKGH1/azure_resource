@@ -21,6 +21,7 @@ variable "sa_account_replication_type" {
 
 variable "tfstate_file_name" {
   description = "Name of the Terraform state file"
+  type        = string
   default     = "default.tfstate" # Fallback default
 }
 
