@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "rg-fsapps-backstage"
     storage_account_name = "devbackstagepoclogsmnfpq"
     container_name       = "tfstate-viabackstage"
-    key                  = "${var.tfstate_file_name}" //"stgacct.tfstate"
+    //key                  = "${var.tfstate_file_name}" //"stgacct.tfstate"
   }
   required_providers {
     azurerm = {
