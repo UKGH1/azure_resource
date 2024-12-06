@@ -42,7 +42,7 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform init -backend-config="key=$(terraform output -raw tfstate_file_name)"
       - name: Debug Input1
         run: echo "${{ inputs.action }}"
      # - name: Debug Input2
