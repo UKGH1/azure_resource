@@ -18,3 +18,9 @@ variable "sa_account_replication_type" {
   type        = string
   description = "Defines the type of replication to use for this storage account. Valid options are LRS, GRS, RAGRS, ZRS, GZRS and RAGZRS."
 }
+
+variable "tfstate_file_name" {
+  description = "Name of the Terraform state file"
+  default     = "default.tfstate" # Fallback default
+}
+
